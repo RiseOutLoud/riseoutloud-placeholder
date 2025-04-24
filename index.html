@@ -47,30 +47,18 @@
         0 0 6px rgba(255, 215, 0, 0.15),
         0 0 10px rgba(255, 255, 255, 0.1);
     }
-    
+
     #shimmerText {
-      background: linear-gradient(120deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
-      background-size: 120% 100%;
+      background: radial-gradient(circle at center, #ffffff, #ffd700, #000000);
+      background-size: 200% 200%;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
-      transition: background-position 0.3s ease;
-      will-change: background-position;
-      background-position: 50% center;
-      animation: shimmerLoop 5s ease-in-out infinite;
-    }
-
-    #shimmerText.user-controlled {
-      animation: none !important;
-    }
-
-    @keyframes shimmerLoop {
-      0%   { background-position: 0% center; }
-      50%  { background-position: 100% center; }
-      100% { background-position: 0% center; }
+      transition: background-position 0.3s ease, background-image 0.3s ease;
+      will-change: background-position, background-image;
     }
 
     p {
@@ -146,47 +134,32 @@
       }
 
       const shimmerText = document.getElementById("shimmerText");
-      let userHasInteracted = false;
-      let hasMovedEnough = false;
-      let lastX = null;
 
-      function updateShimmer(angle) {
-        const direction = angle;
-        shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #000000, #ffffff, #ffd700, #ffffff, #000000)`;
+      function updateRadial(xPercent, yPercent) {
+        shimmerText.style.backgroundImage = `radial-gradient(circle at ${xPercent}% ${yPercent}%, #ffffff, #ffd700, #000000)`;
       }
 
+      // Initial center shimmer
+      updateRadial(50, 50);
+
+      // Mouse-based shimmer control
       document.addEventListener("mousemove", (e) => {
-        if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-        lastX = e.clientX;
-
-        const x = e.clientX / window.innerWidth;
-        const angle = 100 + (x - 0.5) * 60;
-
-        if (!userHasInteracted && hasMovedEnough) {
-          shimmerText.classList.add("user-controlled");
-          userHasInteracted = true;
-        } else if (!hasMovedEnough) {
-          hasMovedEnough = true;
-        }
-
-        updateShimmer(angle);
+        const xPercent = (e.clientX / window.innerWidth) * 100;
+        const yPercent = (e.clientY / window.innerHeight) * 100;
+        updateRadial(xPercent, yPercent);
       });
 
+      // Mobile tilt-based shimmer control
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", (event) => {
-          const gamma = event.gamma || 0;
-          const angle = 100 + gamma;
-
-          if (!userHasInteracted) {
-            shimmerText.classList.add("user-controlled");
-            userHasInteracted = true;
-          }
-
-          updateShimmer(angle);
+          const x = event.gamma || 0; // left/right
+          const y = event.beta || 0;  // front/back
+          const xPercent = 50 + x;
+          const yPercent = 50 + y / 2;
+          updateRadial(xPercent, yPercent);
         }, true);
       }
     });
   </script>
 </body>
 </html>
-
