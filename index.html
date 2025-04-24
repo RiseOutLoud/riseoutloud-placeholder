@@ -49,8 +49,8 @@
     }
 
     #shimmerText {
-      background: linear-gradient(135deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
-      background-size: 200% 200%;
+      background: linear-gradient(120deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
+      background-size: 120% 100%;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
@@ -59,11 +59,18 @@
       display: inline-block;
       transition: background-position 0.3s ease;
       will-change: background-position;
-      background-position: 50% 50%;
+      background-position: 50% center;
+      animation: shimmerLoop 4s ease-in-out infinite;
     }
 
     #shimmerText.user-controlled {
       animation: none !important;
+    }
+
+    @keyframes shimmerLoop {
+      0%   { background-position: 0% center; }
+      50%  { background-position: 100% center; }
+      100% { background-position: 0% center; }
     }
 
     p {
@@ -128,7 +135,6 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Starfield generator
       const starContainer = document.getElementById('stars');
       for (let i = 0; i < 100; i++) {
         const star = document.createElement('div');
@@ -141,66 +147,40 @@
 
       const shimmerText = document.getElementById("shimmerText");
       let userHasInteracted = false;
-      let hasMovedEnough = false;
       let lastX = null;
-      let loopPercent = 0;
-      let loopActive = true;
 
-      function updateShimmerPosition(xPercent, yPercent = 50) {
-        shimmerText.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
+      function updateShimmer(angle) {
+        shimmerText.style.backgroundImage = `linear-gradient(${angle}deg, #000000, #ffffff, #ffd700, #ffffff, #000000)`;
       }
 
-      // Mouse interaction
       document.addEventListener("mousemove", (e) => {
-        const x = e.clientX;
-        if (lastX !== null && Math.abs(x - lastX) < 15) return;
-        lastX = x;
+        if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
+        lastX = e.clientX;
 
-        const percentX = (e.clientX / window.innerWidth) * 100;
-        const percentY = (e.clientY / window.innerHeight) * 100;
+        const x = e.clientX / window.innerWidth;
+        const angle = 100 + (x - 0.5) * 60;
 
-        if (!userHasInteracted && hasMovedEnough) {
+        if (!userHasInteracted) {
           shimmerText.classList.add("user-controlled");
-          loopActive = false;
           userHasInteracted = true;
-        } else if (!hasMovedEnough) {
-          hasMovedEnough = true;
         }
 
-        updateShimmerPosition(percentX, percentY);
+        updateShimmer(angle);
       });
 
-      // Device orientation
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", (event) => {
           const gamma = event.gamma || 0;
-          const beta = event.beta || 0;
-          const percentX = 50 + gamma;
-          const percentY = 50 + beta;
+          const angle = 100 + gamma;
 
           if (!userHasInteracted) {
             shimmerText.classList.add("user-controlled");
-            loopActive = false;
             userHasInteracted = true;
           }
 
-          updateShimmerPosition(percentX, percentY);
+          updateShimmer(angle);
         }, true);
       }
-
-      // Looping shimmer on load
-      function animateShimmerLoop() {
-        if (!loopActive) return;
-        loopPercent += 0.4;
-        if (loopPercent > 100) loopPercent = 0;
-
-        const verticalShift = 50 + Math.sin(loopPercent * 0.1) * 10;
-        updateShimmerPosition(loopPercent, verticalShift);
-
-        requestAnimationFrame(animateShimmerLoop);
-      }
-
-      animateShimmerLoop();
     });
   </script>
 </body>
