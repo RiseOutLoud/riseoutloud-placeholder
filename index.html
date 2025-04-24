@@ -47,15 +47,22 @@
       background: linear-gradient(120deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%);
       background-size: 200% auto;
       color: transparent;
+    
       background-clip: text;
       -webkit-background-clip: text;
+    
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
+    
+      -webkit-mask-image: linear-gradient(#fff, #fff); /* ✅ new fallback fix */
+      mask-image: linear-gradient(#fff, #fff);         /* cross-browser support */
+    
       animation: shimmerText 3s linear infinite;
       transition: background-position 0.3s ease;
       position: relative;
       z-index: 2;
     }
+    
 
     @keyframes shimmerText {
       0% {
