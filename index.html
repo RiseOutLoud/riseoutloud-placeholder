@@ -44,33 +44,22 @@
     .glow-container {
       text-shadow:
         0 0 3px rgba(255, 255, 255, 0.25),
-        0 0 5px rgba(255, 215, 0, 0.15),
-        0 0 7px rgba(255, 255, 255, 0.1);
+        0 0 6px rgba(255, 215, 0, 0.15),
+        0 0 10px rgba(255, 255, 255, 0.1);
     }
 
     #shimmerText {
-      background: linear-gradient(120deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
-      background-size: 100% 100%;
+      background: linear-gradient(90deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
+      background-size: 300% 100%;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
-      transition: background-position 0.3s ease;
       will-change: background-position;
+      transition: background-position 0.3s ease;
       background-position: 0% center;
-      animation: shimmerLoop 4s ease-in-out infinite;
-    }
-
-    #shimmerText.user-controlled {
-      animation: none !important;
-    }
-
-    @keyframes shimmerLoop {
-      0%   { background-position: 0% center; }
-      50%  { background-position: 100% center; }
-      100% { background-position: 0% center; }
     }
 
     p {
@@ -135,7 +124,6 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      // Starfield generation
       const starContainer = document.getElementById('stars');
       for (let i = 0; i < 100; i++) {
         const star = document.createElement('div');
@@ -148,46 +136,50 @@
 
       const shimmerText = document.getElementById("shimmerText");
       let userHasInteracted = false;
-      let hasMovedEnough = false;
       let lastX = null;
+      let loopPercent = 0;
+      let loopActive = true;
 
-      function updateShimmer(angle) {
-        const direction = angle;
-        shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #000000, #ffffff, #ffd700, #ffffff, #000000)`;
+      function updateShimmerFromMouse(percentX) {
+        shimmerText.style.backgroundPosition = `${percentX}% center`;
       }
 
-      // Mouse movement for shimmer direction
+      // Auto shimmer loop on load
+      function animateShimmerLoop() {
+        if (!loopActive) return;
+        loopPercent += 0.3;
+        if (loopPercent > 100) loopPercent = 0;
+        shimmerText.style.backgroundPosition = `${loopPercent}% center`;
+        requestAnimationFrame(animateShimmerLoop);
+      }
+      animateShimmerLoop();
+
+      // Mouse override shimmer
       document.addEventListener("mousemove", (e) => {
-        if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-        lastX = e.clientX;
-
-        const x = e.clientX / window.innerWidth;
-        const angle = 100 + (x - 0.5) * 60;
-
-        if (!userHasInteracted && hasMovedEnough) {
-          shimmerText.classList.add("user-controlled");
-          shimmerText.style.animation = "none";
+        if (!userHasInteracted) {
           userHasInteracted = true;
-        } else if (!hasMovedEnough) {
-          hasMovedEnough = true;
+          loopActive = false;
         }
 
-        updateShimmer(angle);
+        if (lastX !== null && Math.abs(e.clientX - lastX) < 5) return;
+        lastX = e.clientX;
+
+        const percentX = (e.clientX / window.innerWidth) * 100;
+        updateShimmerFromMouse(percentX);
       });
 
-      // Tilt interaction for mobile
+      // Device tilt override
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", (event) => {
           const gamma = event.gamma || 0;
-          const angle = 100 + gamma;
+          const percent = 50 + gamma * 1.5;
 
           if (!userHasInteracted) {
-            shimmerText.classList.add("user-controlled");
-            shimmerText.style.animation = "none";
             userHasInteracted = true;
+            loopActive = false;
           }
 
-          updateShimmer(angle);
+          updateShimmerFromMouse(Math.max(0, Math.min(100, percent)));
         }, true);
       }
     });
