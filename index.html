@@ -11,19 +11,9 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
       background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
       background-size: 400% 400%;
       animation: gradientShift 10s ease infinite;
-      position: relative;
-      color: white;
-      text-align: center;
     }
 
     @keyframes gradientShift {
@@ -32,53 +22,38 @@
       100% { background-position: 0% 50%; }
     }
 
-    .message {
-      animation: fadeIn 2s ease-out forwards;
-      opacity: 0;
+    .container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
       z-index: 2;
-      padding: 0 1rem;
-      background: transparent;
+      text-align: center;
     }
 
     .shimmer-text {
       font-size: 3rem;
       font-weight: bold;
-      display: inline-block;
       background: linear-gradient(120deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%);
       background-size: 200% auto;
-      color: transparent;
-    
       background-clip: text;
       -webkit-background-clip: text;
-    
+      color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
-    
-      -webkit-mask-image: linear-gradient(#fff, #fff);
-      mask-image: linear-gradient(#fff, #fff);
-    
-      animation: shimmerText 3s linear infinite;
-      transition: background-position 0.3s ease;
+      display: inline-block;
+      transition: background-position 0.2s ease;
       position: relative;
       z-index: 2;
     }
-    
 
-    @keyframes shimmerText {
-      0% {
-        background-position: -100% center;
-      }
-      100% {
-        background-position: 100% center;
-      }
-    }
-
-    .message p {
+    p {
       font-size: 1.25rem;
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
+      color: white;
+      margin-top: 20px;
     }
 
     /* Starfield */
@@ -114,7 +89,7 @@
       .shimmer-text {
         font-size: 2rem;
       }
-      .message p {
+      p {
         font-size: 1rem;
       }
     }
@@ -123,8 +98,8 @@
 <body>
   <div class="stars" id="stars"></div>
 
-  <div class="message">
-<h1><span class="shimmer-text">Rise Out Loud is launching soon</span></h1>
+  <div class="container">
+    <h1><span class="shimmer-text" id="shimmerText">Rise Out Loud is launching soon</span></h1>
     <p>Be part of something meaningful.</p>
   </div>
 
@@ -140,25 +115,25 @@
       starContainer.appendChild(star);
     }
 
-    // Shimmer angle interactivity (mouse + device)
-    const shimmerText = document.querySelector('.shimmer-text');
+    // Shimmer interaction
+    const shimmerText = document.getElementById("shimmerText");
 
     function updateShimmer(angle) {
       shimmerText.style.background = `linear-gradient(${angle}deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%)`;
     }
 
-    // Desktop
-    document.addEventListener('mousemove', (e) => {
+    // Desktop mouse movement
+    document.addEventListener("mousemove", (e) => {
       const x = e.clientX / window.innerWidth;
-      const angle = 120 + (x - 0.5) * 60;
+      const angle = 100 + (x - 0.5) * 60;
       updateShimmer(angle);
     });
 
-    // Mobile
+    // Mobile device tilt
     if (window.DeviceOrientationEvent) {
-      window.addEventListener('deviceorientation', (event) => {
+      window.addEventListener("deviceorientation", (event) => {
         const gamma = event.gamma || 0;
-        const angle = 120 + gamma;
+        const angle = 100 + gamma;
         updateShimmer(angle);
       }, true);
     }
