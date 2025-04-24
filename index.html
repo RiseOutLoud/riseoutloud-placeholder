@@ -133,51 +133,54 @@
     —not in <em>where we end our journey</em>.</p>
   </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const starContainer = document.getElementById('stars');
-      for (let i = 0; i < 100; i++) {
-        const star = document.createElement('div');
-        star.classList.add('star');
-        star.style.left = `${Math.random() * 100}%`;
-        star.style.animationDuration = `${3 + Math.random() * 7}s`;
-        star.style.opacity = Math.random().toFixed(2);
-        starContainer.appendChild(star);
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const starContainer = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.animationDuration = `${3 + Math.random() * 7}s`;
+      star.style.opacity = Math.random().toFixed(2);
+      starContainer.appendChild(star);
+    }
+
+    const shimmerText = document.getElementById("shimmerText");
+    let userHasInteracted = false;
+    let lastX = null;
+
+function enableUserControl() {
+  shimmerText.classList.add("user-controlled");
+  userHasInteracted = true;
+}
+
+    function updateShimmerFromMouse(e) {
+      if (lastX !== null && Math.abs(e.clientX - lastX) < 10) return;
+      lastX = e.clientX;
+
+      const x = e.clientX / window.innerWidth;
+      shimmerText.style.backgroundPosition = `${x * 100}% center`;
+
+      if (!userHasInteracted) {
+        enableUserControl();
       }
+    }
 
-      const shimmerText = document.getElementById("shimmerText");
-      let userHasInteracted = false;
-      let lastX = null;
+    document.addEventListener("mousemove", updateShimmerFromMouse);
 
-      function updateShimmerFromMouse(e) {
-        if (lastX !== null && Math.abs(e.clientX - lastX) < 10) return;
-        lastX = e.clientX;
-        const x = e.clientX / window.innerWidth;
-        shimmerText.style.backgroundPosition = `${x * 100}% center`;
-      }
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", (event) => {
+        const gamma = event.gamma || 0;
+        const offset = Math.min(Math.max(gamma, -45), 45);
+        const percentage = (offset + 45) / 90;
+        shimmerText.style.backgroundPosition = `${percentage * 100}% center`;
 
-      function switchToInteractiveMode() {
         if (!userHasInteracted) {
-          shimmerText.classList.add("user-controlled");
-          userHasInteracted = true;
+          enableUserControl();
         }
-      }
-
-      document.addEventListener("mousemove", (e) => {
-        switchToInteractiveMode();
-        updateShimmerFromMouse(e);
-      });
-
-      if (window.DeviceOrientationEvent) {
-        window.addEventListener("deviceorientation", (event) => {
-          const gamma = event.gamma || 0;
-          const offset = Math.min(Math.max(gamma, -45), 45);
-          const percentage = (offset + 45) / 90;
-          switchToInteractiveMode();
-          shimmerText.style.backgroundPosition = `${percentage * 100}% center`;
-        }, true);
-      }
-    });
-  </script>
+      }, true);
+    }
+  });
+</script>
 </body>
 </html>
