@@ -44,7 +44,7 @@
     }
 
     .shimmer-wrapper span {
-      background: linear-gradient(120deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%);
+      background: linear-gradient(120deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
       background-size: 200% auto;
       background-clip: text;
       -webkit-background-clip: text;
@@ -52,7 +52,7 @@
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
-      transition: background-position 0.2s ease;
+      transition: background-position 0.5s ease;
       will-change: background-position;
       background-position: 50% center;
     }
@@ -125,10 +125,10 @@
     // Shimmer interaction
     const shimmerText = document.getElementById("shimmerText");
 
-function updateShimmer(angle) {
-  const position = `${50 + (angle - 100)}% center`;
-  shimmerText.style.backgroundPosition = position;
-}
+    function updateShimmer(angle) {
+      const position = `${50 + (angle - 100) * 2}% center`;
+      shimmerText.style.backgroundPosition = position;
+    }
 
     // Desktop mouse movement
     document.addEventListener("mousemove", (e) => {
