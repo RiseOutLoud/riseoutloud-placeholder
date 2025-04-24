@@ -34,9 +34,16 @@
       text-align: center;
     }
 
-    .shimmer-text {
+    .shimmer-wrapper {
       font-size: 3rem;
       font-weight: bold;
+      display: inline-block;
+      color: transparent;
+      background: none;
+      font-family: inherit;
+    }
+    
+    .shimmer-wrapper span {
       background: linear-gradient(120deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%);
       background-size: 200% auto;
       background-clip: text;
@@ -46,10 +53,7 @@
       text-fill-color: transparent;
       display: inline-block;
       transition: background-position 0.2s ease;
-      position: relative;
-      z-index: 2;
     }
-
     p {
       font-size: 1.25rem;
       color: white;
@@ -99,7 +103,7 @@
   <div class="stars" id="stars"></div>
 
   <div class="container">
-    <h1><span class="shimmer-text" id="shimmerText">Rise Out Loud is launching soon</span></h1>
+  <h1 class="shimmer-wrapper"><span id="shimmerText">Rise Out Loud is launching soon</span></h1>
     <p>Be part of something meaningful.</p>
   </div>
 
