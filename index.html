@@ -11,7 +11,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
+      background: linear-gradient(-45deg, #0b0c0f, #13181f, #1c1f27);
       background-size: 400% 400%;
       animation: gradientShift 10s ease infinite;
     }
@@ -38,30 +38,37 @@
       font-size: 3rem;
       font-weight: bold;
       display: inline-block;
-      color: transparent;
-      background: none;
-      font-family: inherit;
     }
 
-.shimmer-wrapper span {
-  background: linear-gradient(120deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff);
-  background-size: 400% auto;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  -webkit-text-fill-color: transparent;
-  text-fill-color: transparent;
-  display: inline-block;
-  transition: background-position 0.3s ease;
-  will-change: background-position;
-  background-position: 50% center;
-  animation: shimmerLoop 5s ease-in-out infinite;
-}
+    .glow-container {
+      text-shadow:
+        0 0 3px rgba(255, 255, 255, 0.25),
+        0 0 6px rgba(255, 215, 0, 0.15),
+        0 0 10px rgba(255, 255, 255, 0.1);
+    }
 
-/* Stops the looping shimmer when user interacts */
-.shimmer-wrapper span.user-controlled {
-  animation: none !important;
-}
+    #shimmerText {
+      background: radial-gradient(circle at center, #ffffff 10%, #ffd700 35%, #87ceeb 60%, #000000 80%, #ffffff 100%);
+      background-size: 300% 300%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      text-fill-color: transparent;
+      display: inline-block;
+      will-change: background-position;
+      animation: shimmerLoop 5s ease-in-out infinite;
+    }
+
+    #shimmerText.user-controlled {
+      animation: none !important;
+    }
+
+    @keyframes shimmerLoop {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
     p {
       font-size: 1.25rem;
@@ -69,7 +76,6 @@
       margin-top: 20px;
     }
 
-    /* Starfield */
     .stars {
       position: absolute;
       top: 0;
@@ -82,26 +88,11 @@
 
     .star {
       position: absolute;
-      bottom: -10px;
-      width: 2px;
-      height: 2px;
       background: white;
       border-radius: 50%;
       opacity: 0.8;
-      animation: rise linear infinite;
     }
 
-    @keyframes rise {
-      to {
-        transform: translateY(-110vh);
-        opacity: 0;
-      }
-    }
-    @keyframes shimmerLoop {
-      0%   { background-position: 0% center; }
-      50%  { background-position: 100% center; }
-      100% { background-position: 0% center; }
-    }
     @media (max-width: 768px) {
       .shimmer-wrapper {
         font-size: 2rem;
@@ -116,69 +107,97 @@
   <div class="stars" id="stars"></div>
 
   <div class="container">
-<h1 class="shimmer-wrapper">
-  <span id="shimmerText">
-    <span style="font-size: 1.5em;">Rise Out Loud</span><br>
-    <span style="font-size: 0.8em;">Coming Soon</span>
-  </span>
-</h1>
+    <h1 class="shimmer-wrapper">
+      <span class="glow-container">
+        <span id="shimmerText">
+          <span style="font-size: 1.5em;">Rise Out Loud</span><br>
+          <span style="font-size: 0.8em;">Coming Soon</span>
+        </span>
+      </span>
+    </h1>
     <p><strong>Real wins</strong> are found in <em>how we rise</em> to <strong>each moment</strong><br>
-  —not in <em>where we end our journey</em>.</p>
+    —not in <em>where we end our journey</em>.</p>
   </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // 🌌 Starfield generator
+    // Starfield setup
     const starContainer = document.getElementById('stars');
-    for (let i = 0; i < 100; i++) {
+    const numStars = 500;
+    const stars = [];
+
+    for (let i = 0; i < numStars; i++) {
       const star = document.createElement('div');
       star.classList.add('star');
       star.style.left = `${Math.random() * 100}%`;
-      star.style.animationDuration = `${3 + Math.random() * 7}s`;
-      star.style.opacity = Math.random().toFixed(2);
+      star.style.top = `${Math.random() * 100}vh`;
+      const size = Math.random() * 4 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.opacity = '0.8';
       starContainer.appendChild(star);
+      stars.push({ el: star, speed: 0.01 + Math.random() * 0.12 });
     }
 
+    function animateStars() {
+      for (const star of stars) {
+        const top = parseFloat(star.el.style.top);
+        let newTop = top + star.speed;
+        if (newTop > 100) {
+          newTop = 0;
+          star.el.style.left = `${Math.random() * 100}%`;
+        }
+        star.el.style.top = `${newTop}vh`;
+      }
+      requestAnimationFrame(animateStars);
+    }
+
+    animateStars();
+
+    // Shimmer interaction
     const shimmerText = document.getElementById("shimmerText");
     let userHasInteracted = false;
-    let hasMovedEnough = false;
-    let lastX = null;
+    let initialX = null;
+    const movementThreshold = 30;
 
-    function updateShimmer(angle) {
-      const direction = angle;
-      shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
+    function enableUserControl() {
+      shimmerText.classList.add("user-controlled");
+      shimmerText.style.animation = "none";
+      userHasInteracted = true;
+    }
+
+    function updateBackgroundPosition(xPercent) {
+      shimmerText.style.backgroundPosition = `${xPercent}% center`;
     }
 
     document.addEventListener("mousemove", (e) => {
-      console.log("mousemove triggered", e.clientX); // 🔍 DEBUG
-
-      if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-      lastX = e.clientX;
-
-      const x = e.clientX / window.innerWidth;
-      const angle = 100 + (x - 0.5) * 60;
-
-      if (!userHasInteracted && hasMovedEnough) {
-        shimmerText.classList.add("user-controlled");
-        userHasInteracted = true;
-      } else if (!hasMovedEnough) {
-        hasMovedEnough = true;
+      if (!userHasInteracted) {
+        if (initialX === null) {
+          initialX = e.clientX;
+          return;
+        }
+        if (Math.abs(e.clientX - initialX) > movementThreshold) {
+          enableUserControl();
+        }
       }
-
-      updateShimmer(angle);
+      const x = e.clientX / window.innerWidth;
+      updateBackgroundPosition(x * 100);
     });
 
     if (window.DeviceOrientationEvent) {
+      let orientationInitialized = false;
       window.addEventListener("deviceorientation", (event) => {
-        const gamma = event.gamma || 0;
-        const angle = 100 + gamma;
+        const gamma = event.gamma;
+        if (!orientationInitialized && Math.abs(gamma) < 2) return;
+        orientationInitialized = true;
+
+        const offset = Math.min(Math.max(gamma, -45), 45);
+        const percentage = (offset + 45) / 90;
+        shimmerText.style.backgroundPosition = `${percentage * 100}% center`;
 
         if (!userHasInteracted) {
-          shimmerText.classList.add("user-controlled");
-          userHasInteracted = true;
+          enableUserControl();
         }
-
-        updateShimmer(angle);
       }, true);
     }
   });
