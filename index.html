@@ -188,7 +188,7 @@
       let orientationInitialized = false;
       window.addEventListener("deviceorientation", (event) => {
         const gamma = event.gamma;
-        if (!orientationInitialized && Math.abs(gamma) < 2) return;
+        if (!orientationInitialized && Math.abs(gamma) < 6) return;
         orientationInitialized = true;
 
         const offset = Math.min(Math.max(gamma, -45), 45);
