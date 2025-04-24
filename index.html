@@ -117,10 +117,10 @@
 
   <div class="container">
 <h1 class="shimmer-wrapper">
-  <span id="shimmerText">
-    <span style="font-size: 1.5em;">Rise Out Loud</span><br>
-    <span style="font-size: 0.8em;">Coming Soon</span>
-  </span>
+<span id="shimmerText">
+  <span class="shimmer-text" style="font-size: 1.5em;">Rise Out Loud</span><br>
+  <span class="shimmer-text" style="font-size: 0.8em;">Coming Soon</span>
+</span>
 </h1>
     <p><strong>Real wins</strong> are found in <em>how we rise</em> to <strong>each moment</strong><br>
   —not in <em>where we end our journey</em>.</p>
@@ -128,7 +128,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // 🌌 Starfield generator
+    // Starfield generator
     const starContainer = document.getElementById('stars');
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
@@ -139,49 +139,51 @@
       starContainer.appendChild(star);
     }
 
-    const shimmerText = document.getElementById("shimmerText");
-    let userHasInteracted = false;
-    let hasMovedEnough = false;
-    let lastX = null;
+  const shimmerTextEls = document.querySelectorAll(".shimmer-text");
+  let userHasInteracted = false;
+  let hasMovedEnough = false;
+  let lastX = null;
 
-    function updateShimmer(angle) {
-      const direction = angle;
-      shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
+  function updateShimmer(angle) {
+    const direction = angle;
+    shimmerTextEls.forEach(el => {
+      el.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
+    });
+  }
+
+  document.addEventListener("mousemove", (e) => {
+    console.log("mousemove triggered", e.clientX); // 🔍 DEBUG
+
+    if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
+    lastX = e.clientX;
+
+    const x = e.clientX / window.innerWidth;
+    const angle = 100 + (x - 0.5) * 60;
+
+    if (!userHasInteracted && hasMovedEnough) {
+      shimmerTextEls.forEach(el => el.classList.add("user-controlled"));
+      userHasInteracted = true;
+    } else if (!hasMovedEnough) {
+      hasMovedEnough = true;
     }
 
-    document.addEventListener("mousemove", (e) => {
-      console.log("mousemove triggered", e.clientX); // 🔍 DEBUG
+    updateShimmer(angle);
+  });
 
-      if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-      lastX = e.clientX;
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", (event) => {
+      const gamma = event.gamma || 0;
+      const angle = 100 + gamma;
 
-      const x = e.clientX / window.innerWidth;
-      const angle = 100 + (x - 0.5) * 60;
-
-      if (!userHasInteracted && hasMovedEnough) {
-        shimmerText.classList.add("user-controlled");
+      if (!userHasInteracted) {
+        shimmerTextEls.forEach(el => el.classList.add("user-controlled"));
         userHasInteracted = true;
-      } else if (!hasMovedEnough) {
-        hasMovedEnough = true;
       }
 
       updateShimmer(angle);
-    });
-
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener("deviceorientation", (event) => {
-        const gamma = event.gamma || 0;
-        const angle = 100 + gamma;
-
-        if (!userHasInteracted) {
-          shimmerText.classList.add("user-controlled");
-          userHasInteracted = true;
-        }
-
-        updateShimmer(angle);
-      }, true);
-    }
-  });
+    }, true);
+  }
+});
 </script>
 </body>
 </html>
