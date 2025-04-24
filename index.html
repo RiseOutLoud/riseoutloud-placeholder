@@ -149,36 +149,32 @@
       let userHasInteracted = false;
       let lastX = null;
 
-      function updateShimmer(angle) {
-        shimmerText.style.backgroundImage = `linear-gradient(${angle}deg, #000000, #ffffff, #ffd700, #ffffff, #000000)`;
+      function updateShimmerFromMouse(e) {
+        if (lastX !== null && Math.abs(e.clientX - lastX) < 10) return;
+        lastX = e.clientX;
+        const x = e.clientX / window.innerWidth;
+        shimmerText.style.backgroundPosition = `${x * 100}% center`;
       }
 
-      document.addEventListener("mousemove", (e) => {
-        if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-        lastX = e.clientX;
-
-        const x = e.clientX / window.innerWidth;
-        const angle = 100 + (x - 0.5) * 60;
-
+      function switchToInteractiveMode() {
         if (!userHasInteracted) {
           shimmerText.classList.add("user-controlled");
           userHasInteracted = true;
         }
+      }
 
-        updateShimmer(angle);
+      document.addEventListener("mousemove", (e) => {
+        switchToInteractiveMode();
+        updateShimmerFromMouse(e);
       });
 
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", (event) => {
           const gamma = event.gamma || 0;
-          const angle = 100 + gamma;
-
-          if (!userHasInteracted) {
-            shimmerText.classList.add("user-controlled");
-            userHasInteracted = true;
-          }
-
-          updateShimmer(angle);
+          const offset = Math.min(Math.max(gamma, -45), 45);
+          const percentage = (offset + 45) / 90;
+          switchToInteractiveMode();
+          shimmerText.style.backgroundPosition = `${percentage * 100}% center`;
         }, true);
       }
     });
