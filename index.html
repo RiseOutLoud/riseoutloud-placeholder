@@ -123,6 +123,7 @@
   </div>
 
 <script>
+  // Starfield generator
   const starContainer = document.getElementById('stars');
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
@@ -133,35 +134,48 @@
     starContainer.appendChild(star);
   }
 
+  // Shimmer interaction logic
   const shimmerText = document.getElementById("shimmerText");
   let userHasInteracted = false;
+  let hasMovedEnough = false;
   let lastX = null;
 
   function updateShimmer(angle) {
     const direction = angle;
     shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
-
-    if (!userHasInteracted) {
-      shimmerText.classList.add("user-controlled");
-      userHasInteracted = true;
-    }
   }
 
   // Real mouse movement only
-  document.addEventListener("mousemove", (e) => {
-    if (lastX !== null && Math.abs(e.clientX - lastX) < 3) return; // filter tiny/fake moves
-    lastX = e.clientX;
+document.addEventListener("mousemove", (e) => {
+  console.log("mousemove triggered", e.clientX); // Debug line
 
-    const x = e.clientX / window.innerWidth;
-    const angle = 100 + (x - 0.5) * 60;
-    updateShimmer(angle);
-  });
+  if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
+  lastX = e.clientX;
 
-  // Real tilt
+  const x = e.clientX / window.innerWidth;
+  const angle = 100 + (x - 0.5) * 60;
+
+  if (!userHasInteracted && hasMovedEnough) {
+    shimmerText.classList.add("user-controlled");
+    userHasInteracted = true;
+  } else if (!hasMovedEnough) {
+    hasMovedEnough = true;
+  }
+
+  updateShimmer(angle);
+});
+
+  // Real mobile tilt
   if (window.DeviceOrientationEvent) {
     window.addEventListener("deviceorientation", (event) => {
       const gamma = event.gamma || 0;
       const angle = 100 + gamma;
+
+      if (!userHasInteracted) {
+        shimmerText.classList.add("user-controlled");
+        userHasInteracted = true;
+      }
+
       updateShimmer(angle);
     }, true);
   }
