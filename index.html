@@ -43,20 +43,25 @@
       font-family: inherit;
     }
 
-    .shimmer-wrapper span {
-      background: linear-gradient(120deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff);
-      background-size: 400% auto;
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      -webkit-text-fill-color: transparent;
-      text-fill-color: transparent;
-      display: inline-block;
-      transition: background-position 0.3s ease;
-      will-change: background-position;
-      background-position: 50% center;
-      animation: shimmerLoop 5s ease-in-out infinite;
-    }
+.shimmer-wrapper span {
+  background: linear-gradient(120deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff);
+  background-size: 400% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-fill-color: transparent;
+  display: inline-block;
+  transition: background-position 0.3s ease;
+  will-change: background-position;
+  background-position: 50% center;
+  animation: shimmerLoop 5s ease-in-out infinite;
+}
+
+/* Stops the looping shimmer when user interacts */
+.shimmer-wrapper span.user-controlled {
+  animation: none !important;
+}
 
     p {
       font-size: 1.25rem;
@@ -129,9 +134,17 @@
 
   // Shimmer interaction
   const shimmerText = document.getElementById("shimmerText");
+  let userHasInteracted = false;
 
   function updateShimmer(angle) {
     const direction = angle;
+
+    // First time interaction: stop auto loop
+    if (!userHasInteracted) {
+      shimmerText.classList.add("user-controlled");
+      userHasInteracted = true;
+    }
+
     shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
   }
 
