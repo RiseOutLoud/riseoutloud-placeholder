@@ -44,8 +44,8 @@
     }
 
 .shimmer-wrapper span {
-  background: linear-gradient(120deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff);
-  background-size: 400% auto;
+  background: linear-gradient(120deg, #ffffff, #ff00cc, #ffd700, #00ffff, #ffffff);
+  background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
@@ -56,7 +56,14 @@
   will-change: background-position;
   background-position: 50% center;
   animation: shimmerLoop 5s ease-in-out infinite;
+
+  /* Soft glow effect */
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4),
+               0 0 10px rgba(255, 255, 255, 0.3),
+               0 0 15px rgba(255, 0, 204, 0.2),
+               0 0 20px rgba(0, 255, 255, 0.15);
 }
+
 
 /* Stops the looping shimmer when user interacts */
 .shimmer-wrapper span.user-controlled {
@@ -128,7 +135,7 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    // Starfield generator
+    // 🌌 Starfield generator
     const starContainer = document.getElementById('stars');
     for (let i = 0; i < 100; i++) {
       const star = document.createElement('div');
@@ -139,51 +146,49 @@
       starContainer.appendChild(star);
     }
 
-  const shimmerTextEls = document.querySelectorAll(".shimmer-text");
-  let userHasInteracted = false;
-  let hasMovedEnough = false;
-  let lastX = null;
+    const shimmerText = document.getElementById("shimmerText");
+    let userHasInteracted = false;
+    let hasMovedEnough = false;
+    let lastX = null;
 
-  function updateShimmer(angle) {
-    const direction = angle;
-    shimmerTextEls.forEach(el => {
-      el.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
-    });
-  }
-
-  document.addEventListener("mousemove", (e) => {
-    console.log("mousemove triggered", e.clientX); // 🔍 DEBUG
-
-    if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-    lastX = e.clientX;
-
-    const x = e.clientX / window.innerWidth;
-    const angle = 100 + (x - 0.5) * 60;
-
-    if (!userHasInteracted && hasMovedEnough) {
-      shimmerTextEls.forEach(el => el.classList.add("user-controlled"));
-      userHasInteracted = true;
-    } else if (!hasMovedEnough) {
-      hasMovedEnough = true;
+    function updateShimmer(angle) {
+      const direction = angle;
+      shimmerText.style.background = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
     }
 
-    updateShimmer(angle);
-  });
+    // Mouse movement triggers interactive shimmer control
+    document.addEventListener("mousemove", (e) => {
+      if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
+      lastX = e.clientX;
 
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", (event) => {
-      const gamma = event.gamma || 0;
-      const angle = 100 + gamma;
+      const x = e.clientX / window.innerWidth;
+      const angle = 100 + (x - 0.5) * 60;
 
-      if (!userHasInteracted) {
-        shimmerTextEls.forEach(el => el.classList.add("user-controlled"));
+      if (!userHasInteracted && hasMovedEnough) {
+        shimmerText.classList.add("user-controlled");
         userHasInteracted = true;
+      } else if (!hasMovedEnough) {
+        hasMovedEnough = true;
       }
 
       updateShimmer(angle);
-    }, true);
-  }
-});
+    });
+
+    // Device tilt (for mobile shimmer)
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", (event) => {
+        const gamma = event.gamma || 0;
+        const angle = 100 + gamma;
+
+        if (!userHasInteracted) {
+          shimmerText.classList.add("user-controlled");
+          userHasInteracted = true;
+        }
+
+        updateShimmer(angle);
+      }, true);
+    }
+  });
 </script>
 </body>
 </html>
