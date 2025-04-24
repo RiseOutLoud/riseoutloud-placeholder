@@ -44,17 +44,18 @@
     }
 
     .shimmer-wrapper span {
-      background: linear-gradient(120deg, #ffffff 0%, #e0e0e0 50%, #ffffff 100%);
-      background-size: 200% auto;
+      background: linear-gradient(120deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff);
+      background-size: 400% auto;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
-      transition: background-position 0.5s ease;
+      transition: background-position 0.3s ease;
       will-change: background-position;
       background-position: 50% center;
+      animation: shimmerLoop 5s ease-in-out infinite;
     }
 
     p {
@@ -91,7 +92,11 @@
         opacity: 0;
       }
     }
-
+    @keyframes shimmerLoop {
+      0%   { background-position: 0% center; }
+      50%  { background-position: 100% center; }
+      100% { background-position: 0% center; }
+    }
     @media (max-width: 768px) {
       .shimmer-wrapper {
         font-size: 2rem;
