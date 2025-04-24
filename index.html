@@ -123,62 +123,61 @@
   </div>
 
 <script>
-  // Starfield generator
-  const starContainer = document.getElementById('stars');
-  for (let i = 0; i < 100; i++) {
-    const star = document.createElement('div');
-    star.classList.add('star');
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.animationDuration = `${3 + Math.random() * 7}s`;
-    star.style.opacity = Math.random().toFixed(2);
-    starContainer.appendChild(star);
-  }
+  document.addEventListener("DOMContentLoaded", () => {
+    // 🌌 Starfield generator
+    const starContainer = document.getElementById('stars');
+    for (let i = 0; i < 100; i++) {
+      const star = document.createElement('div');
+      star.classList.add('star');
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.animationDuration = `${3 + Math.random() * 7}s`;
+      star.style.opacity = Math.random().toFixed(2);
+      starContainer.appendChild(star);
+    }
 
-  // Shimmer interaction logic
-  const shimmerText = document.getElementById("shimmerText");
-  let userHasInteracted = false;
-  let hasMovedEnough = false;
-  let lastX = null;
+    const shimmerText = document.getElementById("shimmerText");
+    let userHasInteracted = false;
+    let hasMovedEnough = false;
+    let lastX = null;
 
-  function updateShimmer(angle) {
-    const direction = angle;
-    shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
-  }
+    function updateShimmer(angle) {
+      const direction = angle;
+      shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
+    }
 
-  // Real mouse movement only
-document.addEventListener("mousemove", (e) => {
-  console.log("mousemove triggered", e.clientX); // Debug line
+    document.addEventListener("mousemove", (e) => {
+      console.log("mousemove triggered", e.clientX); // 🔍 DEBUG
 
-  if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
-  lastX = e.clientX;
+      if (lastX !== null && Math.abs(e.clientX - lastX) < 15) return;
+      lastX = e.clientX;
 
-  const x = e.clientX / window.innerWidth;
-  const angle = 100 + (x - 0.5) * 60;
+      const x = e.clientX / window.innerWidth;
+      const angle = 100 + (x - 0.5) * 60;
 
-  if (!userHasInteracted && hasMovedEnough) {
-    shimmerText.classList.add("user-controlled");
-    userHasInteracted = true;
-  } else if (!hasMovedEnough) {
-    hasMovedEnough = true;
-  }
-
-  updateShimmer(angle);
-});
-
-  // Real mobile tilt
-  if (window.DeviceOrientationEvent) {
-    window.addEventListener("deviceorientation", (event) => {
-      const gamma = event.gamma || 0;
-      const angle = 100 + gamma;
-
-      if (!userHasInteracted) {
+      if (!userHasInteracted && hasMovedEnough) {
         shimmerText.classList.add("user-controlled");
         userHasInteracted = true;
+      } else if (!hasMovedEnough) {
+        hasMovedEnough = true;
       }
 
       updateShimmer(angle);
-    }, true);
-  }
+    });
+
+    if (window.DeviceOrientationEvent) {
+      window.addEventListener("deviceorientation", (event) => {
+        const gamma = event.gamma || 0;
+        const angle = 100 + gamma;
+
+        if (!userHasInteracted) {
+          shimmerText.classList.add("user-controlled");
+          userHasInteracted = true;
+        }
+
+        updateShimmer(angle);
+      }, true);
+    }
+  });
 </script>
 </body>
 </html>
