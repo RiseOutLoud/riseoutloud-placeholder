@@ -49,17 +49,21 @@
     }
 
     #shimmerText {
-      background: linear-gradient(90deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
-      background-size: 300% 100%;
+      background: linear-gradient(135deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
+      background-size: 200% 200%;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
-      will-change: background-position;
       transition: background-position 0.3s ease;
-      background-position: 0% center;
+      will-change: background-position;
+      background-position: 50% 50%;
+    }
+
+    #shimmerText.user-controlled {
+      animation: none !important;
     }
 
     p {
@@ -124,6 +128,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      // Starfield generator
       const starContainer = document.getElementById('stars');
       for (let i = 0; i < 100; i++) {
         const star = document.createElement('div');
@@ -136,52 +141,66 @@
 
       const shimmerText = document.getElementById("shimmerText");
       let userHasInteracted = false;
+      let hasMovedEnough = false;
       let lastX = null;
       let loopPercent = 0;
       let loopActive = true;
 
-      function updateShimmerFromMouse(percentX) {
-        shimmerText.style.backgroundPosition = `${percentX}% center`;
+      function updateShimmerPosition(xPercent, yPercent = 50) {
+        shimmerText.style.backgroundPosition = `${xPercent}% ${yPercent}%`;
       }
 
-      // Auto shimmer loop on load
-      function animateShimmerLoop() {
-        if (!loopActive) return;
-        loopPercent += 0.3;
-        if (loopPercent > 100) loopPercent = 0;
-        shimmerText.style.backgroundPosition = `${loopPercent}% center`;
-        requestAnimationFrame(animateShimmerLoop);
-      }
-      animateShimmerLoop();
-
-      // Mouse override shimmer
+      // Mouse interaction
       document.addEventListener("mousemove", (e) => {
-        if (!userHasInteracted) {
-          userHasInteracted = true;
-          loopActive = false;
-        }
-
-        if (lastX !== null && Math.abs(e.clientX - lastX) < 5) return;
-        lastX = e.clientX;
+        const x = e.clientX;
+        if (lastX !== null && Math.abs(x - lastX) < 15) return;
+        lastX = x;
 
         const percentX = (e.clientX / window.innerWidth) * 100;
-        updateShimmerFromMouse(percentX);
+        const percentY = (e.clientY / window.innerHeight) * 100;
+
+        if (!userHasInteracted && hasMovedEnough) {
+          shimmerText.classList.add("user-controlled");
+          loopActive = false;
+          userHasInteracted = true;
+        } else if (!hasMovedEnough) {
+          hasMovedEnough = true;
+        }
+
+        updateShimmerPosition(percentX, percentY);
       });
 
-      // Device tilt override
+      // Device orientation
       if (window.DeviceOrientationEvent) {
         window.addEventListener("deviceorientation", (event) => {
           const gamma = event.gamma || 0;
-          const percent = 50 + gamma * 1.5;
+          const beta = event.beta || 0;
+          const percentX = 50 + gamma;
+          const percentY = 50 + beta;
 
           if (!userHasInteracted) {
-            userHasInteracted = true;
+            shimmerText.classList.add("user-controlled");
             loopActive = false;
+            userHasInteracted = true;
           }
 
-          updateShimmerFromMouse(Math.max(0, Math.min(100, percent)));
+          updateShimmerPosition(percentX, percentY);
         }, true);
       }
+
+      // Looping shimmer on load
+      function animateShimmerLoop() {
+        if (!loopActive) return;
+        loopPercent += 0.4;
+        if (loopPercent > 100) loopPercent = 0;
+
+        const verticalShift = 50 + Math.sin(loopPercent * 0.1) * 10;
+        updateShimmerPosition(loopPercent, verticalShift);
+
+        requestAnimationFrame(animateShimmerLoop);
+      }
+
+      animateShimmerLoop();
     });
   </script>
 </body>
