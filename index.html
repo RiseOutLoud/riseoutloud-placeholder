@@ -11,7 +11,7 @@
       height: 100%;
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(-45deg, #0f2027, #203a43, #2c5364);
+      background: linear-gradient(-45deg, #0b0c0f, #13181f, #1c1f27);
       background-size: 400% 400%;
       animation: gradientShift 10s ease infinite;
     }
@@ -43,15 +43,14 @@
 
     .glow-container {
       text-shadow:
-        0 0 5px rgba(255, 255, 255, 0.4),
-        0 0 10px rgba(255, 255, 255, 0.3),
-        0 0 15px rgba(255, 0, 204, 0.2),
-        0 0 20px rgba(0, 255, 255, 0.15);
+        0 0 3px rgba(255, 255, 255, 0.25),
+        0 0 6px rgba(255, 215, 0, 0.15),
+        0 0 10px rgba(255, 255, 255, 0.1);
     }
-
+    
     #shimmerText {
-      background: linear-gradient(120deg, #ffffff, #ff00cc, #ffd700, #00ffff, #ffffff);
-      background-size: 200% 100%;
+      background: linear-gradient(120deg, #000000, #ffffff, #ffd700, #ffffff, #000000);
+      background-size: 120% 100%;
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
@@ -153,7 +152,7 @@
 
       function updateShimmer(angle) {
         const direction = angle;
-        shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ff00cc, #ffd700, #00ffff, #ffffff)`;
+        shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #000000, #ffffff, #ffd700, #ffffff, #000000)`;
       }
 
       document.addEventListener("mousemove", (e) => {
