@@ -48,13 +48,13 @@
       background-size: 200% auto;
       background-clip: text;
       -webkit-background-clip: text;
-      -moz-background-clip: text; /* Optional for Firefox */
       color: transparent;
       -webkit-text-fill-color: transparent;
       text-fill-color: transparent;
       display: inline-block;
       transition: background-position 0.2s ease;
-      will-change: background;
+      will-change: background-position;
+      background-position: 50% center;
     }
 
     p {
@@ -125,9 +125,10 @@
     // Shimmer interaction
     const shimmerText = document.getElementById("shimmerText");
 
-    function updateShimmer(angle) {
-      shimmerText.style.background = `linear-gradient(${angle}deg, #ffffff 0%, #bbbbbb 50%, #ffffff 100%)`;
-    }
+function updateShimmer(angle) {
+  const position = `${50 + (angle - 100)}% center`;
+  shimmerText.style.backgroundPosition = position;
+}
 
     // Desktop mouse movement
     document.addEventListener("mousemove", (e) => {
