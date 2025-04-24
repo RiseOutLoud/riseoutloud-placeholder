@@ -115,41 +115,41 @@
     <p>Be part of something meaningful.</p>
   </div>
 
-  <script>
-    // Starfield generator
-    const starContainer = document.getElementById('stars');
-    for (let i = 0; i < 100; i++) {
-      const star = document.createElement('div');
-      star.classList.add('star');
-      star.style.left = `${Math.random() * 100}%`;
-      star.style.animationDuration = `${3 + Math.random() * 7}s`;
-      star.style.opacity = Math.random().toFixed(2);
-      starContainer.appendChild(star);
-    }
+<script>
+  // Starfield generator
+  const starContainer = document.getElementById('stars');
+  for (let i = 0; i < 100; i++) {
+    const star = document.createElement('div');
+    star.classList.add('star');
+    star.style.left = `${Math.random() * 100}%`;
+    star.style.animationDuration = `${3 + Math.random() * 7}s`;
+    star.style.opacity = Math.random().toFixed(2);
+    starContainer.appendChild(star);
+  }
 
-    // Shimmer interaction
-    const shimmerText = document.getElementById("shimmerText");
+  // Shimmer interaction
+  const shimmerText = document.getElementById("shimmerText");
 
-    function updateShimmer(angle) {
-      const position = `${50 + (angle - 100) * 2}% center`;
-      shimmerText.style.backgroundPosition = position;
-    }
+  function updateShimmer(angle) {
+    const direction = angle;
+    shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
+  }
 
-    // Desktop mouse movement
-    document.addEventListener("mousemove", (e) => {
-      const x = e.clientX / window.innerWidth;
-      const angle = 100 + (x - 0.5) * 60;
+  // Desktop mouse movement
+  document.addEventListener("mousemove", (e) => {
+    const x = e.clientX / window.innerWidth;
+    const angle = 100 + (x - 0.5) * 60;
+    updateShimmer(angle);
+  });
+
+  // Mobile device tilt
+  if (window.DeviceOrientationEvent) {
+    window.addEventListener("deviceorientation", (event) => {
+      const gamma = event.gamma || 0;
+      const angle = 100 + gamma;
       updateShimmer(angle);
-    });
-
-    // Mobile device tilt
-    if (window.DeviceOrientationEvent) {
-      window.addEventListener("deviceorientation", (event) => {
-        const gamma = event.gamma || 0;
-        const angle = 100 + gamma;
-        updateShimmer(angle);
-      }, true);
-    }
-  </script>
+    }, true);
+  }
+</script>
 </body>
 </html>
