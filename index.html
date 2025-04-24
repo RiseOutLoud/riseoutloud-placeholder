@@ -116,12 +116,13 @@
   <div class="stars" id="stars"></div>
 
   <div class="container">
-    <h1 class="shimmer-wrapper"><span id="shimmerText">Rise Out Loud is launching soon</span></h1>
+<h1 class="shimmer-wrapper">
+  <span id="shimmerText">Rise Out Loud is launching soon</span>
+</h1>
     <p>Be part of something meaningful.</p>
   </div>
 
 <script>
-  // Starfield generator
   const starContainer = document.getElementById('stars');
   for (let i = 0; i < 100; i++) {
     const star = document.createElement('div');
@@ -132,30 +133,31 @@
     starContainer.appendChild(star);
   }
 
-  // Shimmer interaction
   const shimmerText = document.getElementById("shimmerText");
   let userHasInteracted = false;
+  let lastX = null;
 
   function updateShimmer(angle) {
     const direction = angle;
+    shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
 
-    // First time interaction: stop auto loop
     if (!userHasInteracted) {
       shimmerText.classList.add("user-controlled");
       userHasInteracted = true;
     }
-
-    shimmerText.style.backgroundImage = `linear-gradient(${direction}deg, #ffffff, #ffd700, #ffffff, #87ceeb, #ffffff)`;
   }
 
-  // Desktop mouse movement
+  // Real mouse movement only
   document.addEventListener("mousemove", (e) => {
+    if (lastX !== null && Math.abs(e.clientX - lastX) < 3) return; // filter tiny/fake moves
+    lastX = e.clientX;
+
     const x = e.clientX / window.innerWidth;
     const angle = 100 + (x - 0.5) * 60;
     updateShimmer(angle);
   });
 
-  // Mobile device tilt
+  // Real tilt
   if (window.DeviceOrientationEvent) {
     window.addEventListener("deviceorientation", (event) => {
       const gamma = event.gamma || 0;
