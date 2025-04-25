@@ -192,7 +192,7 @@
 
     animateStars();
 
-    // Shimmer interaction
+    // Shimmer interaction (desktop only)
     const shimmerText = document.getElementById("shimmerText");
     let userHasInteracted = false;
     let initialX = null;
@@ -221,23 +221,6 @@
       const x = e.clientX / window.innerWidth;
       updateBackgroundPosition(x * 100);
     });
-
-    if (window.DeviceOrientationEvent) {
-      let orientationInitialized = false;
-      window.addEventListener("deviceorientation", (event) => {
-        const gamma = event.gamma;
-        if (!orientationInitialized && Math.abs(gamma) < 6) return;
-        orientationInitialized = true;
-
-        const offset = Math.min(Math.max(gamma, -45), 45);
-        const percentage = (offset + 45) / 90;
-        shimmerText.style.backgroundPosition = `${percentage * 100}% center`;
-
-        if (!userHasInteracted) {
-          enableUserControl();
-        }
-      }, true);
-    }
   });
 </script>
 </body>
