@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rise Out Loud – Coming Soon</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <style>
     html, body {
       margin: 0;
@@ -188,7 +189,7 @@
       let orientationInitialized = false;
       window.addEventListener("deviceorientation", (event) => {
         const gamma = event.gamma;
-        if (!orientationInitialized && Math.abs(gamma) < 2) return;
+        if (!orientationInitialized && Math.abs(gamma) < 6) return;
         orientationInitialized = true;
 
         const offset = Math.min(Math.max(gamma, -45), 45);
